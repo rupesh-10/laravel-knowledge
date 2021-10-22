@@ -14,6 +14,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('login', 'Auth\LoginController@login');
+Route::post('register','Auth\RegisterController@register')->middleware('verification')->name('register');
+Route::post('confirmInvitation','Auth\RegisterController@confirmInvitation')->middleware('invitation')->name('confirm');
+
+
+
+// Admin Routes
+Route::group(['namespace'=> 'API', 'middleware'=>['auth:sanctum','admin']], function (){
+    Route::group(['prefix' => 'admin'], function () {
+        Route::post('invitation', 'AdminController@invite');
+    });
 });
+
+// User Routes
+Route::group(['namespace'=> 'API', 'middleware'=>['auth:sanctum']], function (){
+    Route::group(['prefix' => 'user'], function () {
+        Route::post('updateProfile/{id}', 'UserController@updateProfile')->name('updateProfile');
+    });
+});
+
+
